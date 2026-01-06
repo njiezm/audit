@@ -9,12 +9,15 @@ class Audit extends Model
 {
     use HasFactory;
     
-    protected $fillable = [
-        'client_name',
-        'audit_date',
-        'audit_id',
-        'conclusion'
-    ];
+   protected $fillable = [
+    'client_name',
+    'audit_date',
+    'audit_id',
+    'conclusion',
+    'is_signed',
+    'signed_at',
+    'signed_by'
+];
     
     public function categories()
     {
