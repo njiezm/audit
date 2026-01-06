@@ -1,0 +1,172 @@
+/* Import Bootstrap */
+@import 'bootstrap/dist/css/bootstrap.min.css';
+
+/* Import Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Special+Elite&family=Space+Grotesk:wght@300;500;700&family=JetBrains+Mono&display=swap');
+
+/* Vos styles personnalisés */
+:root {
+    --nj-blue: #003366;
+    --nj-yellow: #FFD700;
+    --nj-red: #ff4757;
+    --nj-green: #2ed573;
+    --nj-dark: #1a1a1a;
+}
+
+body {
+    background-color: #f0f2f5;
+    font-family: 'Space Grotesk', sans-serif;
+    color: var(--nj-dark);
+    margin: 0;
+}
+
+/* Interface Layout */
+.header-bar {
+    background: var(--nj-blue);
+    color: white;
+    padding: 15px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 5px solid var(--nj-yellow);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.main-container {
+    display: grid;
+    grid-template-columns: 420px 1fr;
+    height: calc(100vh - 70px);
+}
+
+.audit-form {
+    background: white;
+    padding: 25px;
+    border-right: 2px solid var(--nj-blue);
+    overflow-y: auto;
+}
+
+.audit-preview {
+    background: #cbd5e0;
+    padding: 40px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Report Pages */
+.report-page {
+    background: white;
+    width: 210mm; /* Largeur A4 */
+    min-height: 297mm; /* Hauteur A4 */
+    padding: 20mm;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    position: relative;
+    margin-bottom: 30px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+}
+
+.brand-font { font-family: 'Special Elite', cursive; }
+
+.section-card {
+    border: 2px solid var(--nj-blue);
+    padding: 15px;
+    margin-bottom: 20px;
+    background: #f8f9fa;
+    position: relative;
+}
+
+.score-badge {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--nj-blue);
+    color: var(--nj-yellow);
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+.report-header {
+    border-bottom: 4px solid var(--nj-blue);
+    padding-bottom: 15px;
+    margin-bottom: 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+
+.category-title {
+    background: var(--nj-blue);
+    color: white;
+    padding: 5px 15px;
+    display: inline-block;
+    margin-bottom: 15px;
+    font-family: 'Special Elite';
+    text-transform: uppercase;
+}
+
+.finding-item {
+    margin-bottom: 20px;
+    padding-left: 20px;
+    border-left: 3px solid var(--nj-yellow);
+}
+
+.recommendation-box {
+    background: #eef2f7;
+    border: 1px dashed var(--nj-blue);
+    padding: 12px;
+    margin-top: 8px;
+    font-style: italic;
+    font-size: 0.9rem;
+}
+
+.btn-nj {
+    background: var(--nj-yellow);
+    color: var(--nj-blue);
+    font-weight: bold;
+    border: 2px solid var(--nj-blue);
+    border-radius: 0;
+    text-transform: uppercase;
+}
+
+/* Print Media Styles */
+@media print {
+    body { background: white; }
+    .header-bar, .audit-form { display: none !important; }
+    .main-container { display: block; height: auto; }
+    .audit-preview { background: white; padding: 0; overflow: visible; }
+    .report-page { 
+        box-shadow: none; 
+        margin: 0 !important; 
+        padding: 15mm;
+        page-break-after: always;
+        width: 100% !important;
+    }
+    .report-page:last-child { page-break-after: auto; }
+}
+
+.delete-btn {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    background: var(--nj-red);
+    color: white;
+    border: none;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 5;
+}
+
+#temp-measurement {
+    position: absolute;
+    visibility: hidden;
+    width: 170mm; /* Largeur de contenu A4 approx */
+}
