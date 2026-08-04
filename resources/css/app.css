@@ -765,11 +765,13 @@ h1, h2, h3, h4, h5, h6 { color: var(--text); }
 .integrity-banner--ko { border-color: var(--nj-red); background: #fdecee; color: #6a0011; }
 .integrity-banner--unknown { border-color: var(--border-strong); background: var(--surface-2); color: var(--text); }
 
+/* `place-items` plutôt qu'un centrage en flex : un élément flex conserve un
+   `min-width: auto` qui l'empêche de descendre sous la largeur minimale de
+   son contenu — la carte débordait alors de l'écran sur mobile. */
 .login-shell {
     min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: grid;
+    place-items: center;
     padding: 20px;
     background: var(--page-bg);
 }
@@ -781,8 +783,16 @@ h1, h2, h3, h4, h5, h6 { color: var(--text); }
     overflow: hidden;
     width: 100%;
     max-width: 940px;
+    min-width: 0;
     display: grid;
     grid-template-columns: 2fr 3fr;
+}
+
+/* Idem pour les colonnes de la carte. */
+.login-card__aside,
+.login-card__main {
+    min-width: 0;
+    overflow-wrap: break-word;
 }
 
 .login-card__aside {
