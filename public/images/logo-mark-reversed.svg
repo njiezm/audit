@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="256" height="256">
+  <title>Audit Master — sceau, version fond sombre</title>
+  <rect x="2" y="2" width="60" height="60" rx="15" fill="#FFD700"/>
+  <rect x="4.5" y="4.5" width="55" height="55" rx="12.5" fill="none" stroke="#003366" stroke-opacity=".14" stroke-width="1"/>
+  <g fill="#c7b316">
+    <rect x="14" y="45" width="9" height="9" rx="2"/>
+    <rect x="27" y="39" width="9" height="15" rx="2"/>
+    <rect x="40" y="33" width="9" height="21" rx="2"/>
+  </g>
+  <path d="M16 30 L26 40 L48 15" fill="none" stroke="#003366" stroke-width="8"
+        stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

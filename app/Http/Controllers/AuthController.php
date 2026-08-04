@@ -2,61 +2,58 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\LoginRequest;
+use App\Models\ActivityLog;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\View\View;
 
 class AuthController extends Controller
 {
-    /**
-     * Affiche le formulaire de connexion
-     */
-    public function showLoginForm()
+    public function showLoginForm(): View|RedirectResponse
     {
+        if (Auth::check()) {
+            return redirect()->route('dashboard');
+        }
+
         return view('auth.login');
     }
 
-    /**
-     * Traite la tentative de connexion
-     */
-    public function login(Request $request)
+    public function login(LoginRequest $request): RedirectResponse
     {
-        $credentials = $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
-        ]);
+        try {
+            $request->authenticate();
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            ActivityLog::record('login_failed', null, $request->input('email'));
 
-        // Identifiants en dur
-        $hardcodedCredentials = [
-            'email' => 'njiezamon10@gmail.com',
-            'password' => 'adminaudit',
-        ];
-
-        if ($credentials['email'] === $hardcodedCredentials['email'] && 
-            $credentials['password'] === $hardcodedCredentials['password']) {
-            
-            // Créer une session manuellement
-            session([
-                'authenticated' => true,
-                'user' => [
-                    'name' => 'Expert N\'jie ZAMON',
-                    'email' => $hardcodedCredentials['email'],
-                ]
-            ]);
-            
-            return redirect()->intended(route('audits.index'));
+            throw $e;
         }
 
-        return back()->withErrors([
-            'email' => 'Les identifiants fournis ne correspondent pas.',
-        ]);
+        // Indispensable : sans régénération, l'identifiant de session choisi
+        // avant l'authentification reste valide (fixation de session).
+        $request->session()->regenerate();
+
+        $user = Auth::user();
+        $user->forceFill(['last_login_at' => now()])->saveQuietly();
+
+        ActivityLog::record('login', $user, $user->email);
+
+        return redirect()->intended(route('dashboard'))
+            ->with('success', 'Bienvenue, '.$user->name.'.');
     }
 
-    /**
-     * Déconnecte l'utilisateur
-     */
-    public function logout()
+    public function logout(Request $request): RedirectResponse
     {
-        session()->forget(['authenticated', 'user']);
-        return redirect()->route('login');
+        ActivityLog::record('logout', Auth::user());
+
+        Auth::guard('web')->logout();
+
+        // On invalide la session et on renouvelle le jeton CSRF : le simple
+        // session()->forget() de l'ancienne version laissait le cookie utilisable.
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect()->route('login')->with('success', 'Vous êtes déconnecté.');
     }
 }

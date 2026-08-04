@@ -1,0 +1,16 @@
+{
+    "name": "Audit Master — NJIEZM.FR",
+    "short_name": "Audit Master",
+    "description": "Plateforme d'audit, de notation et de reporting signé.",
+    "lang": "fr",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#eff2f6",
+    "theme_color": "#003366",
+    "icons": [
+        { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+        { "src": "/favicon-32.png", "sizes": "32x32", "type": "image/png" },
+        { "src": "/apple-touch-icon.png", "sizes": "180x180", "type": "image/png" },
+        { "src": "/images/logo-mark-512.png", "sizes": "512x512", "type": "image/png" }
+    ]
+}

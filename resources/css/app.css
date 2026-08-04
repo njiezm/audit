@@ -1,172 +1,890 @@
-/* Import Bootstrap */
+/* ==========================================================================
+   Audit Master — feuille de style unique
+   Bootstrap et les polices sont bundlés par Vite : plus aucun CDN, plus
+   aucune duplication de la charte dans les vues.
+   ========================================================================== */
+
 @import 'bootstrap/dist/css/bootstrap.min.css';
 
-/* Import Google Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Special+Elite&family=Space+Grotesk:wght@300;500;700&family=JetBrains+Mono&display=swap');
+/* Polices servies depuis /public/fonts (pas de requête vers Google Fonts) */
+@font-face {
+    font-family: 'Space Grotesk';
+    src: url('/fonts/SpaceGrotesk-VariableFont_wght.ttf') format('truetype');
+    font-weight: 300 700;
+    font-display: swap;
+}
 
-/* Vos styles personnalisés */
+@font-face {
+    font-family: 'Special Elite';
+    src: url('/fonts/SpecialElite-Regular.ttf') format('truetype');
+    font-weight: 400;
+    font-display: swap;
+}
+
+/* --------------------------------------------------------------------------
+   1. Jetons de design
+   -------------------------------------------------------------------------- */
+
 :root {
     --nj-blue: #003366;
-    --nj-yellow: #FFD700;
-    --nj-red: #ff4757;
-    --nj-green: #2ed573;
+    --nj-blue-600: #00284f;
+    --nj-blue-100: #e6edf5;
+    --nj-yellow: #ffd700;
+    --nj-yellow-dark: #a67c00; /* variante lisible sur fond clair */
+    --nj-red: #b3001b;
+    --nj-orange: #e8590c;
+    --nj-amber: #b58100;
+    --nj-green: #2f6f4f;
+    --nj-green-dark: #1b5e3f;
     --nj-dark: #1a1a1a;
+
+    --surface: #ffffff;
+    --surface-2: #f6f8fb;
+    --surface-3: #eef2f7;
+    --page-bg: #eff2f6;
+    --preview-bg: #d3dae3;
+    --text: #1a1a1a;
+    --text-muted: #5a6672;
+    --border: #d8dee6;
+    --border-strong: #b8c2ce;
+    --shadow-sm: 0 1px 2px rgba(16, 24, 40, .06), 0 1px 3px rgba(16, 24, 40, .1);
+    --shadow-md: 0 4px 12px rgba(16, 24, 40, .08);
+    --shadow-lg: 0 12px 32px rgba(16, 24, 40, .14);
+    --radius: 8px;
+    --radius-sm: 5px;
+    --header-h: 62px;
+
+    --focus-ring: 0 0 0 3px rgba(0, 51, 102, .35);
 }
+
+/* Thème sombre : suit la préférence système, surchargeable par le sélecteur
+   du bandeau (data-theme sur <html>). L'aperçu A4 reste blanc dans les deux
+   thèmes — c'est une feuille de papier. */
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme='light']) {
+        --surface: #161b22;
+        --surface-2: #1c232c;
+        --surface-3: #232c37;
+        --page-bg: #0f141a;
+        --preview-bg: #10151b;
+        --text: #e6edf3;
+        --text-muted: #9fb0c0;
+        --border: #2b3542;
+        --border-strong: #3a4757;
+        --nj-blue-100: #17293d;
+        --shadow-sm: 0 1px 2px rgba(0, 0, 0, .4);
+        --shadow-md: 0 4px 12px rgba(0, 0, 0, .45);
+        --shadow-lg: 0 12px 32px rgba(0, 0, 0, .55);
+        --focus-ring: 0 0 0 3px rgba(255, 215, 0, .45);
+    }
+}
+
+:root[data-theme='dark'] {
+    --surface: #161b22;
+    --surface-2: #1c232c;
+    --surface-3: #232c37;
+    --page-bg: #0f141a;
+    --preview-bg: #10151b;
+    --text: #e6edf3;
+    --text-muted: #9fb0c0;
+    --border: #2b3542;
+    --border-strong: #3a4757;
+    --nj-blue-100: #17293d;
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, .4);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, .45);
+    --shadow-lg: 0 12px 32px rgba(0, 0, 0, .55);
+    --focus-ring: 0 0 0 3px rgba(255, 215, 0, .45);
+}
+
+/* --------------------------------------------------------------------------
+   2. Base
+   -------------------------------------------------------------------------- */
 
 body {
-    background-color: #f0f2f5;
-    font-family: 'Space Grotesk', sans-serif;
-    color: var(--nj-dark);
+    background-color: var(--page-bg);
+    font-family: 'Space Grotesk', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    color: var(--text);
     margin: 0;
+    min-height: 100vh;
 }
 
-/* Interface Layout */
+.brand-font {
+    font-family: 'Special Elite', 'Courier New', cursive;
+}
+
+a { color: var(--nj-blue); }
+:root[data-theme='dark'] a { color: #7fb2e8; }
+
+h1, h2, h3, h4, h5, h6 { color: var(--text); }
+
+/* Focus visible partout : il n'existait aucun style de focus personnalisé. */
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
+    border-radius: var(--radius-sm);
+}
+
+/* Lien d'évitement pour la navigation au clavier */
+.skip-link {
+    position: absolute;
+    left: -9999px;
+    top: 0;
+    z-index: 2000;
+    background: var(--nj-yellow);
+    color: var(--nj-blue);
+    padding: 10px 18px;
+    font-weight: 700;
+}
+
+.skip-link:focus {
+    left: 8px;
+    top: 8px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: .001ms !important;
+        transition-duration: .001ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* Surcharges Bootstrap alignées sur les jetons */
+.card,
+.list-group-item,
+.table,
+.modal-content,
+.dropdown-menu,
+.offcanvas {
+    background-color: var(--surface);
+    color: var(--text);
+    border-color: var(--border);
+}
+
+.card { border-radius: var(--radius); box-shadow: var(--shadow-sm); }
+.text-muted { color: var(--text-muted) !important; }
+.table { --bs-table-color: var(--text); --bs-table-bg: transparent; }
+.table > :not(caption) > * > * { border-bottom-color: var(--border); }
+.table-hover > tbody > tr:hover > * { background-color: var(--surface-2); color: var(--text); }
+
+.form-control,
+.form-select {
+    background-color: var(--surface);
+    border-color: var(--border);
+    color: var(--text);
+    border-radius: var(--radius-sm);
+}
+
+.form-control:focus,
+.form-select:focus {
+    background-color: var(--surface);
+    color: var(--text);
+    border-color: var(--nj-blue);
+    box-shadow: var(--focus-ring);
+}
+
+.form-control::placeholder { color: var(--text-muted); opacity: .75; }
+.input-group-text { background: var(--surface-2); border-color: var(--border); color: var(--text-muted); }
+
+/* --------------------------------------------------------------------------
+   3. Bandeau de navigation
+   -------------------------------------------------------------------------- */
+
 .header-bar {
     background: var(--nj-blue);
-    color: white;
-    padding: 15px 30px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 5px solid var(--nj-yellow);
+    color: #fff;
+    border-bottom: 4px solid var(--nj-yellow);
     position: sticky;
     top: 0;
-    z-index: 1000;
+    z-index: 1030;
+    min-height: var(--header-h);
 }
 
-.main-container {
-    display: grid;
-    grid-template-columns: 420px 1fr;
-    height: calc(100vh - 70px);
+.header-bar a { color: #fff; }
+.header-bar .navbar-brand { color: #fff; }
+
+.header-bar .nav-link {
+    color: rgba(255, 255, 255, .85);
+    font-weight: 500;
+    padding: .45rem .8rem;
+    border-radius: var(--radius-sm);
 }
 
-.audit-form {
-    background: white;
-    padding: 25px;
-    border-right: 2px solid var(--nj-blue);
-    overflow-y: auto;
+.header-bar .nav-link:hover,
+.header-bar .nav-link:focus { color: #fff; background: rgba(255, 255, 255, .12); }
+
+.header-bar .nav-link.active {
+    color: var(--nj-blue);
+    background: var(--nj-yellow);
+    font-weight: 700;
 }
 
-.audit-preview {
-    background: #cbd5e0;
-    padding: 40px;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+.navbar-toggler {
+    border-color: rgba(255, 255, 255, .4);
+    padding: .35rem .55rem;
 }
 
-/* Report Pages */
-.report-page {
-    background: white;
-    width: 210mm; /* Largeur A4 */
-    min-height: 297mm; /* Hauteur A4 */
-    padding: 20mm;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-    position: relative;
-    margin-bottom: 30px;
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-}
-
-.brand-font { font-family: 'Special Elite', cursive; }
-
-.section-card {
-    border: 2px solid var(--nj-blue);
-    padding: 15px;
-    margin-bottom: 20px;
-    background: #f8f9fa;
-    position: relative;
-}
-
-.score-badge {
-    width: 40px;
-    height: 40px;
-    display: flex;
+.avatar-chip {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: var(--nj-yellow);
+    color: var(--nj-blue);
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    background: var(--nj-blue);
-    color: var(--nj-yellow);
-    font-weight: bold;
-    font-size: 1.2rem;
+    font-weight: 700;
+    font-size: .82rem;
+    flex-shrink: 0;
 }
 
-.report-header {
-    border-bottom: 4px solid var(--nj-blue);
-    padding-bottom: 15px;
-    margin-bottom: 30px;
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-}
+/* --------------------------------------------------------------------------
+   4. Boutons
+   -------------------------------------------------------------------------- */
 
-.category-title {
-    background: var(--nj-blue);
-    color: white;
-    padding: 5px 15px;
-    display: inline-block;
-    margin-bottom: 15px;
-    font-family: 'Special Elite';
-    text-transform: uppercase;
-}
-
-.finding-item {
-    margin-bottom: 20px;
-    padding-left: 20px;
-    border-left: 3px solid var(--nj-yellow);
-}
-
-.recommendation-box {
-    background: #eef2f7;
-    border: 1px dashed var(--nj-blue);
-    padding: 12px;
-    margin-top: 8px;
-    font-style: italic;
-    font-size: 0.9rem;
-}
+.btn { border-radius: var(--radius-sm); font-weight: 500; }
 
 .btn-nj {
     background: var(--nj-yellow);
     color: var(--nj-blue);
-    font-weight: bold;
+    font-weight: 700;
     border: 2px solid var(--nj-blue);
-    border-radius: 0;
     text-transform: uppercase;
+    letter-spacing: .02em;
 }
 
-/* Print Media Styles */
-@media print {
-    body { background: white; }
-    .header-bar, .audit-form { display: none !important; }
-    .main-container { display: block; height: auto; }
-    .audit-preview { background: white; padding: 0; overflow: visible; }
-    .report-page { 
-        box-shadow: none; 
-        margin: 0 !important; 
-        padding: 15mm;
-        page-break-after: always;
-        width: 100% !important;
+.btn-nj:hover,
+.btn-nj:focus { background: #e6c200; color: var(--nj-blue); border-color: var(--nj-blue); }
+
+.btn-nj-outline {
+    background: transparent;
+    color: var(--nj-blue);
+    border: 2px solid var(--nj-blue);
+    font-weight: 600;
+}
+
+.btn-nj-outline:hover { background: var(--nj-blue); color: #fff; }
+
+:root[data-theme='dark'] .btn-nj-outline { color: var(--nj-yellow); border-color: var(--nj-yellow); }
+:root[data-theme='dark'] .btn-nj-outline:hover { background: var(--nj-yellow); color: var(--nj-blue); }
+
+/* État de chargement : empêche la double soumission d'un formulaire, qui
+   créait deux audits identiques. */
+.btn[data-loading='true'] {
+    pointer-events: none;
+    opacity: .65;
+    position: relative;
+}
+
+.btn[data-loading='true']::after {
+    content: '';
+    display: inline-block;
+    width: .8em;
+    height: .8em;
+    margin-left: .5em;
+    border: 2px solid currentColor;
+    border-right-color: transparent;
+    border-radius: 50%;
+    animation: nj-spin .7s linear infinite;
+    vertical-align: -.1em;
+}
+
+@keyframes nj-spin { to { transform: rotate(360deg); } }
+
+/* --------------------------------------------------------------------------
+   5. Badges d'état et de score
+   -------------------------------------------------------------------------- */
+
+.badge-status {
+    display: inline-block;
+    padding: .28em .7em;
+    border-radius: 999px;
+    font-size: .74rem;
+    font-weight: 700;
+    letter-spacing: .02em;
+    text-transform: uppercase;
+    border: 1px solid transparent;
+}
+
+.badge-status--draft { background: var(--surface-3); color: var(--text-muted); border-color: var(--border-strong); }
+.badge-status--finalized { background: #e7f0fb; color: #1c4e80; border-color: #b9d3ef; }
+.badge-status--signed { background: #e3f3ea; color: var(--nj-green-dark); border-color: #a9d7be; }
+.badge-status--archived { background: #efeae2; color: #6b5a3e; border-color: #d7c9b2; }
+
+:root[data-theme='dark'] .badge-status--finalized { background: #12283f; color: #8bc0f2; border-color: #1e4468; }
+:root[data-theme='dark'] .badge-status--signed { background: #122d20; color: #7fd3a4; border-color: #1e4a34; }
+:root[data-theme='dark'] .badge-status--archived { background: #2b2519; color: #d3bd90; border-color: #4a3f28; }
+
+.score-badge {
+    width: 42px;
+    height: 42px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--nj-blue);
+    color: #fff;
+    font-weight: 700;
+    font-size: 1.15rem;
+    border-radius: var(--radius-sm);
+    flex-shrink: 0;
+}
+
+.score-badge--sm { width: 30px; height: 30px; font-size: .9rem; }
+
+/* Jauge horizontale : lecture du score sans avoir à interpréter un chiffre */
+.score-meter {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    min-width: 120px;
+}
+
+.score-meter__track {
+    flex: 1;
+    height: 7px;
+    border-radius: 999px;
+    background: var(--surface-3);
+    overflow: hidden;
+}
+
+/* `display: block` est indispensable : la barre est un <span>, donc inline
+   par défaut, et largeur comme hauteur y seraient sans effet — la jauge
+   restait vide quel que soit le score. */
+.score-meter__fill {
+    display: block;
+    height: 100%;
+    border-radius: 999px;
+    transition: width .25s ease;
+}
+
+.score-meter__value {
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+    font-size: .85rem;
+    white-space: nowrap;
+}
+
+/* Sélecteur de note : 5 segments cliquables à la place du <select> 1/5…5/5 */
+.score-picker {
+    display: inline-flex;
+    gap: 3px;
+    border-radius: var(--radius-sm);
+}
+
+.score-picker input { position: absolute; opacity: 0; width: 0; height: 0; }
+
+.score-picker label {
+    width: 30px;
+    height: 30px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border-strong);
+    background: var(--surface);
+    color: var(--text-muted);
+    font-weight: 700;
+    font-size: .82rem;
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+    user-select: none;
+    transition: background .12s ease, color .12s ease, border-color .12s ease;
+}
+
+.score-picker label:hover { border-color: var(--nj-blue); }
+.score-picker input:checked + label { color: #fff; border-color: transparent; }
+.score-picker input:focus-visible + label { box-shadow: var(--focus-ring); }
+
+.priority-dot {
+    display: inline-block;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    margin-right: .4rem;
+    vertical-align: baseline;
+}
+
+/* --------------------------------------------------------------------------
+   6. Éditeur d'audit — grille responsive
+   -------------------------------------------------------------------------- */
+
+.editor-layout {
+    display: grid;
+    grid-template-columns: minmax(380px, 460px) 1fr;
+    gap: 0;
+    min-height: calc(100vh - var(--header-h));
+}
+
+.editor-form {
+    background: var(--surface);
+    padding: 22px;
+    border-right: 1px solid var(--border);
+    overflow-y: auto;
+    max-height: calc(100vh - var(--header-h));
+}
+
+.editor-preview {
+    background: var(--preview-bg);
+    padding: 32px 20px;
+    overflow-y: auto;
+    max-height: calc(100vh - var(--header-h));
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Sous 1200 px, la colonne unique + onglets remplace la grille figée :
+   l'éditeur était strictement inutilisable en dessous de ~1100 px. */
+@media (max-width: 1199.98px) {
+    .editor-layout {
+        grid-template-columns: 1fr;
+        min-height: 0;
     }
+
+    .editor-form,
+    .editor-preview {
+        max-height: none;
+        overflow: visible;
+        border-right: 0;
+    }
+
+    .editor-pane { display: none; }
+    .editor-pane.is-active { display: block; }
+    .editor-preview.editor-pane.is-active { display: flex; }
+    .editor-tabs { display: flex !important; }
+}
+
+.editor-tabs {
+    display: none;
+    position: sticky;
+    top: var(--header-h);
+    z-index: 1020;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 8px 12px;
+    gap: 8px;
+}
+
+.editor-tabs button {
+    flex: 1;
+    border: 1px solid var(--border-strong);
+    background: var(--surface);
+    color: var(--text-muted);
+    padding: .5rem;
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+}
+
+.editor-tabs button[aria-selected='true'] {
+    background: var(--nj-blue);
+    border-color: var(--nj-blue);
+    color: #fff;
+}
+
+.section-card {
+    border: 1px solid var(--border-strong);
+    border-left: 4px solid var(--nj-blue);
+    padding: 14px 14px 12px;
+    margin-bottom: 14px;
+    background: var(--surface-2);
+    border-radius: var(--radius-sm);
+    position: relative;
+}
+
+.section-card.is-dragging { opacity: .45; }
+.section-card.is-drop-target { border-top: 3px solid var(--nj-yellow); }
+
+.section-card__handle {
+    cursor: grab;
+    color: var(--text-muted);
+    background: none;
+    border: none;
+    padding: 2px 6px;
+    line-height: 1;
+    font-size: 1.05rem;
+}
+
+.section-card__handle:active { cursor: grabbing; }
+
+.delete-btn {
+    background: transparent;
+    color: var(--nj-red);
+    border: 1px solid transparent;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    cursor: pointer;
+    line-height: 1;
+    font-size: 1.05rem;
+    flex-shrink: 0;
+}
+
+.delete-btn:hover { background: var(--nj-red); color: #fff; }
+
+.category-hint {
+    font-size: .78rem;
+    color: var(--text-muted);
+    margin-top: .25rem;
+}
+
+/* --------------------------------------------------------------------------
+   7. Aperçu A4
+   -------------------------------------------------------------------------- */
+
+.report-page {
+    background: #fff;
+    color: #1a1a1a;
+    width: 210mm;
+    min-height: 297mm;
+    padding: 18mm;
+    box-shadow: var(--shadow-lg);
+    position: relative;
+    margin-bottom: 26px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    transform-origin: top center;
+}
+
+.report-page h1, .report-page h2, .report-page h3,
+.report-page h4, .report-page h5, .report-page .text-muted { color: inherit; }
+
+/* La page A4 est mise à l'échelle au lieu de déborder horizontalement. */
+@media (max-width: 900px) {
+    .report-page { transform: scale(.62); margin-bottom: -85mm; }
+}
+
+@media (max-width: 640px) {
+    .report-page { transform: scale(.44); margin-bottom: -150mm; }
+    .editor-preview { padding: 16px 4px; }
+}
+
+.report-header {
+    border-bottom: 3px solid var(--nj-blue);
+    padding-bottom: 12px;
+    margin-bottom: 22px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 12px;
+}
+
+.report-page .category-block { margin-bottom: 20px; }
+
+.report-page .category-title {
+    background: var(--nj-blue);
+    color: #fff;
+    padding: 5px 14px;
+    display: inline-block;
+    font-family: 'Special Elite', cursive;
+    text-transform: uppercase;
+    font-size: 14px;
+    border-radius: 2px;
+}
+
+.report-page .finding-item {
+    padding-left: 16px;
+    border-left: 3px solid var(--nj-yellow);
+}
+
+.report-page .recommendation-box {
+    background: #eef2f7;
+    border: 1px dashed var(--nj-blue);
+    padding: 11px;
+    margin-top: 7px;
+    font-style: italic;
+    font-size: .88rem;
+    border-radius: 3px;
+}
+
+.report-page .report-footer {
+    margin-top: auto;
+    padding-top: 10px;
+    border-top: 1px solid #ddd;
+    font-size: 10px;
+    color: #767676; /* contraste AA, contrairement à l'ancien opacity-50 */
+    display: flex;
+    justify-content: space-between;
+}
+
+.radar-chart { max-width: 100%; height: auto; }
+
+/* Champs libres avec balisage léger (*gras*, `code`, puces) */
+.rich > :last-child { margin-bottom: 0; }
+.rich p { margin: 0 0 .6rem; }
+.rich ul { margin: 0 0 .6rem; padding-left: 1.1rem; }
+.rich li { margin-bottom: .2rem; }
+
+.rich code {
+    background: var(--surface-3);
+    padding: .1em .3em;
+    border-radius: 3px;
+    font-size: .9em;
+    color: inherit;
+}
+
+/* --------------------------------------------------------------------------
+   8. Tableau de bord
+   -------------------------------------------------------------------------- */
+
+.stat-tile {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 18px;
+    box-shadow: var(--shadow-sm);
+    height: 100%;
+}
+
+.stat-tile__label {
+    font-size: .74rem;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    color: var(--text-muted);
+    font-weight: 600;
+    margin-bottom: .35rem;
+}
+
+.stat-tile__value {
+    font-size: 1.85rem;
+    font-weight: 700;
+    line-height: 1.1;
+    font-variant-numeric: tabular-nums;
+}
+
+.stat-tile__hint { font-size: .8rem; color: var(--text-muted); }
+
+/* Histogramme sans librairie : des div en flex. */
+.bar-chart {
+    display: flex;
+    align-items: flex-end;
+    gap: 5px;
+}
+
+.bar-chart__col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    min-width: 0;
+}
+
+/* La piste porte une hauteur explicite en pixels : une hauteur en % sur la
+   barre ne résout à rien tant que son parent n'a pas de hauteur définie —
+   les barres se réduisaient à leur min-height de 2 px. */
+.bar-chart__track {
+    width: 100%;
+    height: 110px;
+    display: flex;
+    align-items: flex-end;
+}
+
+.bar-chart__bar {
+    width: 100%;
+    background: var(--nj-blue);
+    border-radius: 3px 3px 0 0;
+    min-height: 3px;
+    transition: height .25s ease;
+}
+
+.bar-chart__label {
+    font-size: .66rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+
+.sparkline { display: block; width: 100%; height: 56px; }
+
+/* --------------------------------------------------------------------------
+   9. États vides & divers
+   -------------------------------------------------------------------------- */
+
+.empty-state {
+    text-align: center;
+    padding: 48px 20px;
+    color: var(--text-muted);
+}
+
+.empty-state__icon {
+    font-size: 2.6rem;
+    opacity: .5;
+    margin-bottom: .6rem;
+    display: block;
+}
+
+.filter-bar {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px;
+    margin-bottom: 16px;
+}
+
+.sort-link { color: inherit; text-decoration: none; white-space: nowrap; }
+.sort-link:hover { color: var(--nj-blue); }
+.sort-link__arrow { opacity: .45; font-size: .7em; }
+.sort-link.is-active .sort-link__arrow { opacity: 1; }
+
+.timeline { list-style: none; padding: 0; margin: 0; }
+
+.timeline li {
+    display: flex;
+    gap: .7rem;
+    padding: .55rem 0;
+    border-bottom: 1px solid var(--border);
+    font-size: .88rem;
+}
+
+.timeline li:last-child { border-bottom: 0; }
+
+.timeline__icon {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--surface-3);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: .8rem;
+}
+
+.integrity-banner {
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    border: 2px solid;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+}
+
+.integrity-banner--ok { border-color: var(--nj-green); background: #e8f5ee; color: #14442e; }
+.integrity-banner--ko { border-color: var(--nj-red); background: #fdecee; color: #6a0011; }
+.integrity-banner--unknown { border-color: var(--border-strong); background: var(--surface-2); color: var(--text); }
+
+.login-shell {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: var(--page-bg);
+}
+
+.login-card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+    width: 100%;
+    max-width: 940px;
+    display: grid;
+    grid-template-columns: 2fr 3fr;
+}
+
+.login-card__aside {
+    background: var(--nj-blue);
+    color: #fff;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+}
+
+.login-card__aside .small { color: rgba(255, 255, 255, .82); }
+.login-card__main { padding: 40px; }
+
+/* La carte 40/60 % était illisible sous 768 px. */
+@media (max-width: 767.98px) {
+    .login-card { grid-template-columns: 1fr; }
+    .login-card__aside { padding: 26px; }
+    .login-card__main { padding: 26px; }
+}
+
+.table-responsive { border-radius: var(--radius); }
+
+/* Sous 768 px, chaque ligne du tableau devient une carte lisible. */
+@media (max-width: 767.98px) {
+    .table-stack thead { display: none; }
+
+    .table-stack tbody tr {
+        display: block;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        margin-bottom: 12px;
+        padding: 10px 12px;
+        background: var(--surface);
+    }
+
+    .table-stack tbody td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        border: 0;
+        padding: .38rem 0;
+        text-align: right;
+    }
+
+    .table-stack tbody td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        font-size: .74rem;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        color: var(--text-muted);
+        text-align: left;
+        flex-shrink: 0;
+    }
+
+    .table-stack tbody td[data-label='']::before { content: none; }
+}
+
+/* --------------------------------------------------------------------------
+   10. Impression
+   -------------------------------------------------------------------------- */
+
+@media print {
+    body { background: #fff; }
+
+    .header-bar,
+    .editor-form,
+    .editor-tabs,
+    .no-print,
+    footer.site-footer { display: none !important; }
+
+    .editor-layout { display: block; }
+
+    .editor-preview {
+        background: #fff;
+        padding: 0;
+        overflow: visible;
+        max-height: none;
+        display: block;
+    }
+
+    .report-page {
+        box-shadow: none;
+        margin: 0 !important;
+        padding: 15mm;
+        width: 100% !important;
+        min-height: 0;
+        transform: none !important;
+        page-break-after: always;
+    }
+
     .report-page:last-child { page-break-after: auto; }
 }
 
-.delete-btn {
+/* Div de mesure de la pagination de l'aperçu : hors flux et hors lecture
+   d'écran. */
+#pagination-probe {
     position: absolute;
-    top: -10px;
-    right: -10px;
-    background: var(--nj-red);
-    color: white;
-    border: none;
-    width: 25px;
-    height: 25px;
-    border-radius: 50%;
-    cursor: pointer;
-    z-index: 5;
-}
-
-#temp-measurement {
-    position: absolute;
+    left: -10000px;
+    top: 0;
     visibility: hidden;
-    width: 170mm; /* Largeur de contenu A4 approx */
+    width: 174mm;
+    pointer-events: none;
 }
