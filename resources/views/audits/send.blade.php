@@ -14,6 +14,20 @@
     </div>
 @endunless
 
+@if (in_array(config('mail.default'), ['log', 'array'], true))
+    <div class="alert alert-danger">
+        <p class="fw-bold mb-1">La messagerie n'est pas configurée pour envoyer</p>
+        <p class="mb-2">
+            Le pilote actif est <code>{{ config('mail.default') }}</code> : il écrit le message dans
+            <code>storage/logs/laravel.log</code> au lieu de le remettre au destinataire.
+        </p>
+        <p class="mb-0 small">
+            Renseignez <code>MAIL_MAILER</code>, <code>MAIL_HOST</code> et <code>MAIL_PORT</code>
+            dans le fichier <code>.env</code>, puis lancez <code>php artisan config:clear</code>.
+        </p>
+    </div>
+@endif
+
 <div class="row g-3">
     <div class="col-12 col-lg-8">
         <div class="card">

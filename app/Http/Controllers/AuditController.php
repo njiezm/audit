@@ -320,6 +320,20 @@ class AuditController extends Controller
         $audit->forceFill(['sent_at' => now()])->save();
         ActivityLog::record('sent', $audit, $data['to']);
 
+        // Les pilotes `log` et `array` acceptent le message sans jamais le
+        // remettre à personne. Annoncer « envoyé » dans ce cas ferait croire
+        // à une transmission qui n'a pas eu lieu.
+        $mailer = config('mail.default');
+
+        if (in_array($mailer, ['log', 'array'], true)) {
+            return redirect()->route('audits.show', $audit)->with(
+                'warning',
+                "Le rapport n'a PAS été transmis : la messagerie est configurée sur « {$mailer} », "
+                ."qui se contente d'écrire le message dans les journaux. Renseignez MAIL_MAILER, "
+                .'MAIL_HOST et MAIL_PORT dans le fichier .env pour envoyer réellement.'
+            );
+        }
+
         return redirect()->route('audits.show', $audit)
             ->with('success', 'Rapport envoyé à '.$data['to'].'.');
     }
