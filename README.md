@@ -1,59 +1,161 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Audit Master — NJIEZM.FR
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Plateforme d'audit : rédaction de rapports notés, signature électronique avec
+empreinte d'intégrité, export PDF et vérification publique par le client.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Installation
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+**Prérequis** — PHP 8.2+, PostgreSQL 13+, Node 20+, Composer.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+PostgreSQL n'est pas interchangeable : le schéma s'appuie sur `ILIKE` et
+`to_char()`.
 
-## Learning Laravel
+```bash
+composer install
+cp .env.example .env
+php artisan key:generate
+```
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+Renseignez dans `.env` la connexion à la base et le compte administrateur
+initial :
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+```dotenv
+DB_DATABASE=audit
+DB_USERNAME=postgres
+DB_PASSWORD=…
 
-## Laravel Sponsors
+ADMIN_EMAIL=vous@exemple.fr
+ADMIN_PASSWORD=un-mot-de-passe-solide
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+Puis :
 
-### Premium Partners
+```bash
+php artisan migrate
+php artisan db:seed          # compte admin + 3 modèles d'audit
+php artisan storage:link     # logos clients et signatures
+npm install && npm run build
+```
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+Si `ADMIN_PASSWORD` est absent, le seeder en génère un et l'affiche dans la
+console. Changez-le à la première connexion (Profil → Mot de passe).
 
-## Contributing
+### Jeux de données optionnels
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```bash
+php artisan db:seed --class=DemoSeeder     # 3 clients de démonstration, 4 audits
+php artisan demo:purge                     # les efface définitivement
 
-## Code of Conduct
+php artisan db:seed --class=CitadelSeeder  # diagnostic CITADEL, version offerte
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+---
 
-## Security Vulnerabilities
+## Ce que fait la plateforme
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+**Rédaction.** Éditeur en deux volets : formulaire à gauche, aperçu A4 paginé à
+droite, mis à jour en direct. Catégories réordonnables au glisser-déposer ou au
+clavier, notation sur un barème documenté de 1 à 5, pondération ×1 à ×5,
+criticité / échéance / responsable sur chaque recommandation. Modèles d'audit
+réutilisables et bibliothèque de catégories en autocomplétion.
 
-## License
+Les champs libres acceptent un balisage léger : `*gras*`, `` `code` ``, et les
+lignes commençant par `·`, `-` ou `1.` deviennent des listes à puces. Le même
+rendu s'applique à l'écran et dans le PDF.
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+**Notation.** Score global pondéré, radar par catégorie, encart des trois
+risques majeurs, plan d'action trié par criticité, comparaison automatique avec
+l'audit précédent du même client.
+
+**Signature.** Signer fige le contenu : l'audit devient non modifiable et non
+supprimable. Une empreinte SHA-256 est calculée et un instantané du contenu est
+archivé. Le client reçoit un code de vérification.
+
+**Vérification publique.** `/verifier` — le destinataire saisit le code imprimé
+sur le PDF ; la plateforme confirme l'existence du rapport et l'intégrité de son
+contenu, sans jamais divulguer les constats.
+
+**Diffusion.** PDF avec page de garde, barème, plan d'action et signature.
+Aperçu dans le navigateur ou téléchargement, filigrane optionnel
+(« BROUILLON », « CONFIDENTIEL », « DIAGNOSTIC GRATUIT »…), envoi par e-mail
+avec le PDF en pièce jointe.
+
+**Pilotage.** Tableau de bord (volume, score moyen, points faibles récurrents,
+suivis à programmer), fiches clients avec courbe d'évolution, recherche,
+filtres, tri, export CSV, actions groupées, corbeille, journal d'activité.
+
+**Comptes.** Trois rôles : administrateur (tout le portefeuille), auditeur (ses
+missions), lecture seule. Réinitialisation de mot de passe, signature manuscrite
+par utilisateur.
+
+---
+
+## Développement
+
+```bash
+composer dev     # serveur + file d'attente + logs + Vite
+php artisan test
+```
+
+### Base de test
+
+Les tests utilisent une base PostgreSQL dédiée, à créer une fois :
+
+```sql
+CREATE DATABASE audit_test;
+```
+
+### Identité visuelle
+
+Le sceau (favicon, icônes, logos du PDF et bannière) est généré depuis sa
+définition géométrique :
+
+```bash
+php artisan brand:assets
+```
+
+Le fichier source est `public/favicon.svg` ; toute modification doit être
+reportée à l'identique dans `App\Console\Commands\GenerateBrandAssets` et dans
+le composant `resources/views/components/logo.blade.php`.
+
+---
+
+## Déploiement
+
+`public/build` est **versionné** : le serveur de production n'a besoin ni de
+Node ni de `npm run build`.
+
+```bash
+composer install --no-dev --optimize-autoloader
+php artisan migrate --force
+php artisan config:cache && php artisan route:cache && php artisan view:cache
+```
+
+À vérifier avant mise en ligne :
+
+- `APP_DEBUG=false` et `APP_ENV=production` ;
+- `MAIL_MAILER` configuré sur un vrai transport (`log` n'envoie rien) ;
+- `php artisan storage:link` exécuté ;
+- droits d'écriture sur `storage/` et `bootstrap/cache/`.
+
+---
+
+## Points d'attention pour les contributeurs
+
+**Ne jamais utiliser la forme PHP en ligne dans un gabarit Blade.** Le
+compilateur la confond avec l'ouverture d'un bloc et absorbe tout le balisage
+jusqu'à la fermeture suivante, ce qui produit des erreurs très éloignées de leur
+cause. Utilisez systématiquement la forme bloc, regroupée en tête de vue.
+
+**Le PDF est rendu par DomPDF**, qui ne gère ni flexbox ni grid. Toute mise en
+page du gabarit `audits/pdf.blade.php` doit passer par des `<table>`.
+
+**Ne pas remplacer les options DomPDF en bloc.** `setOptions()` écrase la
+configuration entière, y compris le chemin des polices compilées. Utilisez
+`setOption()`, qui modifie l'objet existant.
+
+**Le barème de notation est déclaré à trois endroits** qui doivent rester
+alignés : `App\Support\ScoreScale`, `resources/js/lib/format.js` et le tableau
+du gabarit PDF.
