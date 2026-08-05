@@ -5,11 +5,13 @@ import './bootstrap';
 import * as bootstrap from 'bootstrap';
 
 import { initAuditEditor } from './audit-editor.js';
+import { initSpecificationEditor } from './specification-editor.js';
 import { initTheme } from './theme.js';
 import { initConfirmations } from './confirm.js';
 
 window.bootstrap = bootstrap;
 window.initAuditEditor = initAuditEditor;
+window.initSpecificationEditor = initSpecificationEditor;
 
 initTheme();
 initConfirmations();

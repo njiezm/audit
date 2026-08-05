@@ -8,6 +8,7 @@ use App\Http\Controllers\ClientController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SpecificationController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VerificationController;
 use Illuminate\Support\Facades\Route;
@@ -71,6 +72,15 @@ Route::middleware(['auth', 'active'])->group(function () {
         Route::post('dupliquer', [AuditController::class, 'duplicate'])->name('duplicate');
         Route::get('envoyer', [AuditController::class, 'sendForm'])->name('sendForm');
         Route::post('envoyer', [AuditController::class, 'send'])->middleware('throttle:10,10')->name('send');
+
+        // --- Cahier des charges (module facultatif) ---
+        Route::get('cahier-des-charges', [SpecificationController::class, 'show'])->name('specification.show');
+        Route::get('cahier-des-charges/creer', [SpecificationController::class, 'create'])->name('specification.create');
+        Route::post('cahier-des-charges', [SpecificationController::class, 'store'])->name('specification.store');
+        Route::get('cahier-des-charges/modifier', [SpecificationController::class, 'edit'])->name('specification.edit');
+        Route::put('cahier-des-charges', [SpecificationController::class, 'update'])->name('specification.update');
+        Route::delete('cahier-des-charges', [SpecificationController::class, 'destroy'])->name('specification.destroy');
+        Route::get('cahier-des-charges/pdf', [SpecificationController::class, 'pdf'])->name('specification.pdf');
 
         Route::post('pieces-jointes', [AttachmentController::class, 'store'])->name('attachments.store');
         Route::get('pieces-jointes/{attachment}', [AttachmentController::class, 'download'])->name('attachments.download');

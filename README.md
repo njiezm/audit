@@ -48,8 +48,13 @@ console. Changez-le à la première connexion (Profil → Mot de passe).
 php artisan db:seed --class=DemoSeeder     # 3 clients de démonstration, 4 audits
 php artisan demo:purge                     # les efface définitivement
 
-php artisan db:seed --class=CitadelSeeder  # diagnostic CITADEL, version offerte
+php artisan db:seed --class=CitadelSeeder          # diagnostic CITADEL, version offerte
+php artisan db:seed --class=CitadelCompleteSeeder  # audit complet + cahier des charges
 ```
+
+Les deux seeders CITADEL sont additifs : ils réutilisent le client s'il existe,
+créent un audit distinct et s'interrompent si celui-ci est déjà présent. Aucune
+donnée existante n'est modifiée.
 
 ---
 

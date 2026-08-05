@@ -42,6 +42,22 @@ class ReferenceGenerator
         return sprintf('AUD-%d-%04d', $year, $number);
     }
 
+    /** Référence de cahier des charges : même compteur annuel, autre préfixe. */
+    public function nextSpecification(?int $year = null): string
+    {
+        $year ??= (int) now()->format('Y');
+        $count = DB::table('specifications')
+            ->whereRaw('EXTRACT(YEAR FROM created_at) = ?', [$year])
+            ->count();
+
+        do {
+            $count++;
+            $reference = sprintf('CDC-%d-%04d', $year, $count);
+        } while (DB::table('specifications')->where('reference', $reference)->exists());
+
+        return $reference;
+    }
+
     /**
      * Aligne le compteur sur les références déjà présentes en base, pour que
      * la reprise d'un existant ne réutilise pas un numéro.

@@ -321,6 +321,70 @@
     </div>
 </div>
 
+{{-- ------------------------------------------------------------------
+     Cahier des charges — module facultatif
+     ------------------------------------------------------------------ --}}
+@php
+    $specification = $audit->specification;
+@endphp
+
+<div class="card mb-4">
+    <div class="card-body">
+        @if ($specification)
+            <div class="d-flex flex-wrap justify-content-between align-items-start gap-3">
+                <div>
+                    <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
+                        <h2 class="h6 text-uppercase text-muted mb-0">Cahier des charges</h2>
+                        <span class="{{ $specification->status->badgeClass() }}">
+                            {{ $specification->status->label() }}
+                        </span>
+                        <span class="badge text-bg-light border">{{ $specification->reference }}</span>
+                    </div>
+                    <p class="mb-1">{{ $specification->title }}</p>
+                    <p class="text-muted small mb-0">
+                        {{ $specification->baseLots()->count() }} lot(s) ·
+                        {{ $specification->announced_days_min ?? $specification->daysMin() }}
+                        – {{ $specification->announced_days_max ?? $specification->daysMax() }} jours
+                        @if ($budget = $specification->budgetRange())
+                            · {{ $specification->formatBudget($budget['min']) }}
+                            à {{ $specification->formatBudget($budget['max']) }}
+                        @endif
+                        @unless ($specification->include_in_pdf)
+                            · <span class="text-warning-emphasis">non accolé au rapport</span>
+                        @endunless
+                    </p>
+                </div>
+
+                <div class="d-flex gap-2 flex-wrap">
+                    <a href="{{ route('audits.specification.show', $audit) }}"
+                       class="btn btn-sm btn-nj-outline">Consulter</a>
+                    @can('update', $specification)
+                        <a href="{{ route('audits.specification.edit', $audit) }}"
+                           class="btn btn-sm btn-outline-secondary">Modifier</a>
+                    @endcan
+                    <a href="{{ route('audits.specification.pdf', $audit) }}" target="_blank" rel="noopener"
+                       class="btn btn-sm btn-outline-secondary">PDF</a>
+                </div>
+            </div>
+        @else
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+                <div>
+                    <h2 class="h6 text-uppercase text-muted mb-1">Cahier des charges</h2>
+                    <p class="text-muted small mb-0">
+                        Module facultatif. L'audit constate ; le cahier des charges chiffre le chantier
+                        en lots et s'accole au rapport.
+                    </p>
+                </div>
+                @can('update', $audit)
+                    <a href="{{ route('audits.specification.create', $audit) }}" class="btn btn-nj-outline">
+                        Ajouter un cahier des charges
+                    </a>
+                @endcan
+            </div>
+        @endif
+    </div>
+</div>
+
 <div class="row g-3">
     {{-- Pièces jointes --}}
     <div class="col-12 col-lg-6">

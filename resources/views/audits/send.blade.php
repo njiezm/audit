@@ -70,6 +70,28 @@
                         <textarea id="message" name="message" rows="7" class="form-control">{{ old('message', "Bonjour,\n\nVeuillez trouver ci-joint le rapport d'audit réalisé le ".$audit->audit_date?->format('d/m/Y').".\n\nJe reste à votre disposition pour en échanger.\n\nCordialement,") }}</textarea>
                     </div>
 
+                    @if ($audit->specification)
+                        <div class="p-3 mb-4 rounded" style="background: var(--surface-2); border: 1px solid var(--border);">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="1"
+                                       id="attach_specification" name="attach_specification"
+                                       @checked(old('attach_specification', ! $audit->specification->include_in_pdf))>
+                                <label class="form-check-label" for="attach_specification">
+                                    Joindre le cahier des charges en fichier séparé
+                                    <span class="text-muted">({{ $audit->specification->reference }})</span>
+                                </label>
+                            </div>
+                            <div class="form-text mt-1">
+                                @if ($audit->specification->include_in_pdf)
+                                    Il figure déjà en annexe du rapport. Cochez pour l'envoyer <em>aussi</em>
+                                    comme document autonome, plus commode à transmettre à un prestataire.
+                                @else
+                                    Il n'est pas accolé au rapport : sans cette option, le client ne le recevra pas.
+                                @endif
+                            </div>
+                        </div>
+                    @endif
+
                     <div class="d-flex gap-2">
                         <button type="submit" class="btn btn-nj">Envoyer</button>
                         <a href="{{ route('audits.show', $audit) }}" class="btn btn-outline-secondary">Annuler</a>
@@ -82,8 +104,20 @@
     <div class="col-12 col-lg-4">
         <div class="card">
             <div class="card-body">
-                <h2 class="h6 text-uppercase text-muted mb-3">Pièce jointe</h2>
+                <h2 class="h6 text-uppercase text-muted mb-3">Pièces jointes</h2>
                 <p class="small mb-2">📄 <code>{{ $audit->pdfFilename() }}</code></p>
+
+                @if ($audit->specification)
+                    <p class="small mb-2">
+                        📄 <code>{{ $audit->specification->pdfFilename() }}</code>
+                        <span class="text-muted">— selon l'option ci-contre</span>
+                    </p>
+                    @if ($audit->specification->include_in_pdf)
+                        <p class="small text-muted mb-2">
+                            Le cahier des charges est également en annexe du rapport.
+                        </p>
+                    @endif
+                @endif
 
                 @if ($audit->is_signed)
                     <p class="small mb-0">

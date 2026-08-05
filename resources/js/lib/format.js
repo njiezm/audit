@@ -46,13 +46,15 @@ export function rich(value) {
 
     const flushList = () => {
         if (!list.length) return;
-        html += `<ul>${list.map((i) => `<li>${i}</li>`).join('')}</ul>`;
+        html += `<ul>${list.map((i) => `<li>${inline(i)}</li>`).join('')}</ul>`;
         list = [];
     };
 
+    // Mise en forme appliquée au bloc reconstitué, comme côté serveur : un
+    // *gras* réparti sur deux lignes doit rester reconnu.
     const flushParagraph = () => {
         if (!paragraph.length) return;
-        html += `<p>${paragraph.join('<br>')}</p>`;
+        html += `<p>${inline(paragraph.join(' '))}</p>`;
         paragraph = [];
     };
 
@@ -62,18 +64,24 @@ export function rich(value) {
 
         if (bullet) {
             flushParagraph();
-            list.push(inline(bullet[1]));
+            list.push(bullet[1]);
             return;
         }
 
-        flushList();
-
         if (line === '') {
+            flushList();
             flushParagraph();
             return;
         }
 
-        paragraph.push(inline(line));
+        // Continuation d'une puce plutôt que nouveau paragraphe.
+        if (list.length && !paragraph.length) {
+            list[list.length - 1] += ' ' + line;
+            return;
+        }
+
+        flushList();
+        paragraph.push(line);
     });
 
     flushList();

@@ -34,6 +34,7 @@ class SmokeTest extends TestCase
             'détail d\'audit' => "/audits/{$audit->id}",
             'édition d\'audit' => "/audits/{$audit->id}/edit",
             'envoi au client' => "/audits/{$audit->id}/envoyer",
+            'création de cahier des charges' => "/audits/{$audit->id}/cahier-des-charges/creer",
             'corbeille' => '/audits/corbeille',
             'liste des clients' => '/clients',
             'création de client' => '/clients/create',

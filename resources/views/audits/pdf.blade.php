@@ -19,6 +19,14 @@
         : null;
 
     $watermarkSize = max(44, min(130, (int) (1250 / max(6, mb_strlen((string) $audit->watermark)))));
+
+    // Le cahier des charges n'est accolé que s'il existe et que son auteur
+    // l'a voulu : c'est un module facultatif, pas une annexe systématique.
+    $specification = $audit->specification;
+
+    if ($specification && ! $specification->include_in_pdf) {
+        $specification = null;
+    }
 @endphp
 <!DOCTYPE html>
 <html lang="fr">
@@ -238,6 +246,42 @@
             padding: 1px 3px;
         }
 
+        .rich pre {
+            background: #f4f6f9;
+            border: 1px solid #dde3ea;
+            padding: 8px 10px;
+            margin: 0 0 7px;
+            font-family: 'Courier', monospace;
+            font-size: 8.5px;
+            line-height: 1.35;
+            page-break-inside: avoid;
+        }
+
+        .rich pre code { background: none; padding: 0; font-size: inherit; }
+
+        .rich-table {
+            width: 100%;
+            margin: 0 0 8px;
+            border-collapse: collapse;
+            font-size: 9.5px;
+            page-break-inside: auto;
+        }
+
+        .rich-table th {
+            background: #003366;
+            color: #fff;
+            text-align: left;
+            padding: 4px 6px;
+            font-size: 8.5px;
+            text-transform: uppercase;
+        }
+
+        .rich-table td {
+            border-bottom: 1px solid #e2e6ea;
+            padding: 4px 6px;
+            vertical-align: top;
+        }
+
         /* --- Filigrane optionnel ---
            `position: fixed` le fait répéter sur chaque page, et il est
            déclaré avant le contenu pour rester en arrière-plan : DomPDF
@@ -259,6 +303,10 @@
             transform: rotate(-30deg);
         }
     </style>
+
+    @if ($specification)
+        @include('specifications.partials.pdf-styles')
+    @endif
 </head>
 <body>
 
@@ -606,6 +654,14 @@
     <div class="signature-box center muted small">
         Document non signé — version de travail, sans valeur d'engagement.
     </div>
+@endif
+
+{{-- ==================================================================
+     ANNEXE — CAHIER DES CHARGES
+     ================================================================== --}}
+@if ($specification)
+    <div style="page-break-before: always;"></div>
+    @include('specifications.partials.pdf-body')
 @endif
 
 </body>

@@ -300,7 +300,12 @@ class AuditController extends Controller
             'cc' => ['nullable', 'email'],
             'subject' => ['required', 'string', 'max:255'],
             'message' => ['nullable', 'string', 'max:5000'],
+            'attach_specification' => ['nullable', 'boolean'],
         ]);
+
+        // Le cahier des charges ne part en pièce séparée que s'il existe.
+        $attachSpecification = $request->boolean('attach_specification')
+            && $audit->specification !== null;
 
         try {
             $mail = Mail::to($data['to']);
@@ -309,7 +314,12 @@ class AuditController extends Controller
                 $mail->cc($data['cc']);
             }
 
-            $mail->send(new AuditReportMail($audit, $data['subject'], $data['message'] ?? null));
+            $mail->send(new AuditReportMail(
+                $audit,
+                $data['subject'],
+                $data['message'] ?? null,
+                $attachSpecification,
+            ));
         } catch (\Throwable $e) {
             Log::error('Envoi du rapport impossible', ['audit' => $audit->id, 'exception' => $e]);
 

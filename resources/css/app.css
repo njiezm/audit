@@ -622,6 +622,49 @@ h1, h2, h3, h4, h5, h6 { color: var(--text); }
     color: inherit;
 }
 
+/* Blocs préformatés : arborescences de fichiers, extraits SQL. */
+.rich pre {
+    background: var(--surface-3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: .8rem 1rem;
+    overflow-x: auto;
+    margin: 0 0 .6rem;
+    font-size: .8rem;
+    line-height: 1.45;
+}
+
+.rich pre code {
+    background: none;
+    padding: 0;
+    white-space: pre;
+}
+
+.rich-table {
+    width: 100%;
+    margin: 0 0 .8rem;
+    border-collapse: collapse;
+    font-size: .86rem;
+}
+
+.rich-table th {
+    background: var(--nj-blue);
+    color: #fff;
+    text-align: left;
+    padding: .4rem .6rem;
+    font-size: .74rem;
+    text-transform: uppercase;
+    letter-spacing: .03em;
+}
+
+.rich-table td {
+    border-bottom: 1px solid var(--border);
+    padding: .4rem .6rem;
+    vertical-align: top;
+}
+
+.rich-table tbody tr:nth-child(even) { background: var(--surface-2); }
+
 /* --------------------------------------------------------------------------
    8. Tableau de bord
    -------------------------------------------------------------------------- */
